@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Momentum – Daily Goals Tracker</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#faf8f5;--card:#fff;--ink:#1f2430;--mut:#7b8190;--line:#ece8e1;--fit:#16a37f;--biz:#3b6ef5;--con:#f08a24;--shadow:0 2px 12px rgba(30,30,50,.06)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161c;--card:#1d2028;--ink:#f1f2f5;--mut:#9097a6;--line:#2a2e38;--fit:#2ec99f;--biz:#6f94ff;--con:#ffa24d;--shadow:none}}
+:root[data-theme="dark"]{--bg:#14161c;--card:#1d2028;--ink:#f1f2f5;--mut:#9097a6;--line:#2a2e38;--fit:#2ec99f;--biz:#6f94ff;--con:#ffa24d;--shadow:none}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.45}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 90px}
+h1{font-size:1.5rem;margin:0}
+.sub{color:var(--mut);font-size:.9rem}
+.hero{background:linear-gradient(135deg,var(--fit),var(--biz));color:#fff;border-radius:20px;padding:20px;margin:16px 0;display:flex;gap:16px;align-items:center}
+.hero q{display:block;font-size:1.05rem;font-weight:600;quotes:none}
+.hero small{opacity:.85}
+.ring{flex:none;position:relative;width:84px;height:84px}
+.ring svg{transform:rotate(-90deg)}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:1.1rem}
+.stats{display:flex;gap:10px;margin-bottom:14px}
+.stat{flex:1;background:var(--card);border-radius:14px;padding:12px;box-shadow:var(--shadow);border:1px solid var(--line);text-align:center}
+.stat b{font-size:1.3rem;display:block}.stat span{font-size:.75rem;color:var(--mut)}
+.card{background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow);border:1px solid var(--line)}
+.card h2{font-size:1rem;margin:0 0 10px;display:flex;justify-content:space-between;align-items:center}
+.pill{font-size:.75rem;font-weight:600;padding:2px 10px;border-radius:99px;color:#fff}
+.item{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.item:first-of-type{border-top:0}
+.chk{flex:none;width:24px;height:24px;border-radius:8px;border:2px solid var(--c);background:transparent;cursor:pointer;display:grid;place-items:center;color:#fff;font-size:14px;padding:0}
+.chk.on{background:var(--c)}
+.item span{flex:1}.item.done span{text-decoration:line-through;color:var(--mut)}
+.x{background:none;border:0;color:var(--mut);cursor:pointer;font-size:18px;padding:2px 6px}
+.add{display:flex;gap:8px;margin-top:10px}
+input[type=text]{flex:1;min-width:0;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:16px}
+.btn{border:0;border-radius:10px;padding:10px 14px;background:var(--ink);color:var(--bg);font-weight:600;cursor:pointer}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;max-width:240px;background:none;border:0;padding:12px 4px;color:var(--mut);font-size:.85rem;cursor:pointer}
+nav button.on{color:var(--ink);font-weight:700}
+.top{display:flex;justify-content:space-between;align-items:flex-start}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.dow{font-size:.7rem;color:var(--mut);text-align:center}
+.day{aspect-ratio:1;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;font-size:.85rem;position:relative;padding:0}
+.day.today{border-color:var(--con);border-width:2px}
+.day.sel{background:var(--ink);color:var(--bg)}
+.day i{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);font-style:normal;font-size:.6rem;color:var(--con);font-weight:700}
+.mnav{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.mnav button{background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:10px;width:36px;height:36px;cursor:pointer}
+.bar{height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar div{height:100%;border-radius:99px}
+.row{margin:10px 0}.row p{margin:0 0 4px;font-size:.85rem;display:flex;justify-content:space-between}
+.week{display:flex;gap:8px;align-items:flex-end;height:110px}
+.week div{flex:1;text-align:center;font-size:.7rem;color:var(--mut)}
+.week em{display:block;background:var(--fit);border-radius:6px 6px 0 0;min-height:4px;margin-bottom:4px}
+.tag{font-size:.7rem;color:var(--mut);margin-left:6px}
+.hide{display:none}
+.hero q{font-size:.85rem;font-weight:500;margin-top:4px}
+.avatar{flex:none;width:68px;height:68px;border-radius:18px;background:rgba(255,255,255,.2);display:grid;place-items:center;font-size:2.2rem}
+.pinfo{flex:1;min-width:0}.pt{display:flex;justify-content:space-between;gap:8px;font-size:.9rem}
+.xpbar{height:12px;background:rgba(255,255,255,.3);border-radius:99px;overflow:hidden;margin:6px 0}
+.xpbar div{height:100%;background:#ffd23f;border-radius:99px;transition:width .5s}
+.boss{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:14px;box-shadow:var(--shadow)}
+.boss .xpbar{background:var(--line)}.boss .xpbar div{background:#e5484d}.boss.dead .xpbar div{background:var(--fit)}
+.boss small{color:var(--mut)}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.bd{text-align:center;border:1px solid var(--line);border-radius:12px;padding:10px 4px;font-size:.72rem}.bd b{display:block;font-size:1.6rem}.bd.lock{opacity:.35;filter:grayscale(1)}
+.float{position:fixed;z-index:50;font-weight:800;color:#ffb400;font-size:1.2rem;pointer-events:none;animation:fl 1s ease-out forwards}
+@keyframes fl{to{transform:translateY(-60px);opacity:0}}
+.ovl{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:rgba(0,0,0,.6);text-align:center;color:#fff;animation:fi .2s}
+.ovl h2{font-size:2rem;margin:0;animation:zm .5s}.ovl p{margin:8px 0 0}
+@keyframes zm{from{transform:scale(.3)}to{transform:scale(1)}}@keyframes fi{from{opacity:0}}
+.cf{position:fixed;top:-10px;width:9px;height:14px;z-index:70;animation:fall 1.8s linear forwards;border-radius:2px}
+@keyframes fall{to{transform:translateY(105vh) rotate(540deg)}}
+.pl{border-left:4px solid var(--con)}.pl label{display:block;font-size:.78rem;color:var(--mut);margin:10px 0 4px}.pl input{width:100%}
+.pq{font-size:1.1rem;font-weight:700;margin:4px 0 8px}
+.btn.pk{width:100%;margin:12px 0 6px;background:var(--bg);color:var(--ink);border:2px dashed var(--con)}.btn.pk.on{background:var(--fit);color:#fff;border:2px solid var(--fit)}
+.btn.ghost{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+.ch{padding:10px 0;border-top:1px solid var(--line)}.ch .bar{margin:6px 0}
+.step{width:32px;height:32px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:1.1rem;cursor:pointer;margin-left:6px}
+input[type=number]{padding:10px 8px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:16px}
+@keyframes pu{50%{opacity:.55;transform:scale(1.06)}}
+.avatar svg{width:100%;height:100%}
+.sprint{background:linear-gradient(135deg,#1f2a5a,#3b3b8f);color:#fff;border-radius:18px;padding:14px 16px;margin-bottom:14px}
+.sprint.warn{background:linear-gradient(135deg,#9a3412,#f08a24)}
+.sprint.danger{background:linear-gradient(135deg,#7f1d1d,#e5484d);animation:dg 1.6s infinite}
+.sprint.won{background:linear-gradient(135deg,#0f766e,#16a37f)}
+@keyframes dg{50%{box-shadow:0 0 0 5px rgba(229,72,77,.35)}}
+.spt{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.9rem}.spt .x{color:#fff;opacity:.8}
+.tbs{display:flex;gap:8px;margin:10px 0}
+.tb{flex:1;background:rgba(255,255,255,.16);border-radius:12px;text-align:center;padding:8px 0}
+.tb b{font-size:1.7rem;font-variant-numeric:tabular-nums;display:block;line-height:1.1}.tb span{font-size:.65rem;opacity:.85;letter-spacing:.06em}
+.sprint .bar{background:rgba(255,255,255,.25)}.sprint .bar div{background:#fff}
+.tb.mini{flex:.75;background:rgba(255,255,255,.3)}.tb.mini b{color:#ffd23f;font-size:1.3rem;line-height:1.5}
+.spm{font-size:.85rem;font-weight:600;margin-top:8px}
+.spset{margin-top:10px;display:grid;gap:8px}.spset input{background:rgba(255,255,255,.95);color:#1f2430;width:100%}
+.spset .btn{background:#fff;color:#1f2430}
+.chk{transition:transform .15s}.chk.on{transform:scale(1.12)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="sprint" id="sp"><div class="spt"><b id="sp-name"></b><span id="sp-day"></span><button class="x" id="sp-gear" aria-label="Sprint settings">⚙</button></div>
+  <div class="tbs"><div class="tb"><b id="sp-d">30</b><span>DAYS</span></div><div class="tb"><b id="sp-h">00</b><span>HRS</span></div><div class="tb"><b id="sp-m">00</b><span>MIN</span></div><div class="tb"><b id="sp-s">00</b><span>SEC</span></div><div class="tb mini"><b id="sp-ms">00</b><span>MS</span></div></div>
+  <div class="bar"><div id="sp-bar" style="width:0"></div></div><div class="spm" id="sp-msg"></div>
+  <div class="spset hide" id="sp-set"><input type="text" id="sp-nin" placeholder="Sprint name"><input type="date" id="sp-din"><button class="btn" id="sp-rs">↻ Restart 30 days from now</button></div></div>
+  <div class="top"><div><h1 id="hi"></h1><div class="sub" id="date"></div></div></div>
+  <div id="view"></div>
+</div>
+<nav>
+  <button data-t="today">✅ Today</button>
+  <button data-t="plan">🗓️ Content Plan</button>
+  <button data-t="prog">📈 Progress</button>
+</nav>
+<script>
+const CATS={fitness:{n:'Fitness',c:'var(--fit)',e:'💪'},business:{n:'Business',c:'var(--biz)',e:'🚀'},content:{n:'Content',c:'var(--con)',e:'🎬'}};
+const QUOTES=["Small steps every day add up to big results.","Discipline is choosing what you want most over what you want now.","You don't have to be extreme, just consistent.","Show up today. Future you is watching.","Progress, not perfection.","Done is better than perfect. Post it.","Your only competition is who you were yesterday.","Motivation gets you started. Habits keep you going."];
+const uid=()=>Math.random().toString(36).slice(2,9);
+const key=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const today=new Date(),TK=key(today);
+let S={goals:[
+ {id:'a1',cat:'fitness',text:'Wake up on time'},{id:'a2',cat:'fitness',text:'Morning running or walking'},{id:'a3',cat:'fitness',text:'Gym / planned workout'},{id:'a4',cat:'fitness',text:'Follow nutrition plan'},{id:'a5',cat:'fitness',text:'Drink 2.5–3 L water'},
+ {id:'b1',cat:'business',text:'Study / improve a skill'},{id:'b2',cat:'business',text:'Work on wellness business'},{id:'b3',cat:'business',text:'Track expenses and revenue'},{id:'b4',cat:'business',text:'Night review and plan tomorrow'},
+ {id:'c1',cat:'content',text:'Shoot one vlog or Reel'},{id:'c2',cat:'content',text:'Publish or edit content'}],done:{},plans:{}};
+try{const r=localStorage.getItem('momentum-v2');if(r)S=JSON.parse(r)}catch(e){}
+const save=()=>{try{localStorage.setItem('momentum-v2',JSON.stringify(S))}catch(e){}};
+S.challenges=S.challenges||[{id:'w1',text:'Post 5 Reels this week',target:5},{id:'w2',text:'Hit the gym 4 times',target:4}];
+S.cc=S.cc||{};S.chWins=S.chWins||{};S.pledge=S.pledge||{};S.pledgeDays=S.pledgeDays||{};
+let editP=false;
+S.sprint=S.sprint||{start:Date.now(),name:'30-Day Sprint'};save();
+const weekKey=()=>{const d=new Date(today);d.setDate(d.getDate()-(d.getDay()+6)%7);return key(d)};
+let tab='today',cm=new Date(today.getFullYear(),today.getMonth(),1),sel=TK;
+
+const pct=(dk,cat)=>{const g=S.goals.filter(x=>!cat||x.cat===cat);if(!g.length)return 0;const d=S.done[dk]||{};return Math.round(g.filter(x=>d[x.id]).length/g.length*100)};
+function streak(){let n=0,d=new Date(today);if(pct(key(d))<70)d.setDate(d.getDate()-1);while(pct(key(d))>=70){n++;d.setDate(d.getDate()-1);if(n>999)break}return n}
+function ring(p){const r=34,c=2*Math.PI*r;return `<div class="ring"><svg width="84" height="84"><circle cx="42" cy="42" r="${r}" stroke="rgba(255,255,255,.3)" stroke-width="8" fill="none"/><circle cx="42" cy="42" r="${r}" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-p/100)}"/></svg><b>${p}%</b></div>`}
+const TITLES=['Rookie','Starter','Grinder','Warrior','Hustler','Champion','Legend','Titan','Mythic','Unstoppable'],ICONS=['🌱','💪','🔥','⚔️','🚀','🏆','💎','👑','🌟','🦅'];
+const postedN=()=>Object.values(S.plans).flat().filter(x=>x.done).length;
+function xpTotal(){let x=0;for(const d in S.done){x+=S.goals.filter(g=>S.done[d][g.id]).length*10;if(S.goals.length&&pct(d)===100)x+=25}return x+postedN()*15+Object.keys(S.chWins).length*50+Object.keys(S.pledgeDays).length*10}
+function player(){const xp=xpTotal(),lv=Math.floor(Math.sqrt(xp/50))+1,a=50*(lv-1)**2,b=50*lv*lv,i=Math.min(lv-1,9);return{xp,lv,title:TITLES[i],icon:ICONS[i],pc:Math.round((xp-a)/(b-a)*100),next:b-xp}}
+function catLv(k){let n=0;for(const d in S.done)n+=S.goals.filter(g=>g.cat===k&&S.done[d][g.id]).length;return Math.floor(Math.sqrt(n/3))+1}
+function badges(){const st=streak(),all=Object.keys(S.done),n=all.reduce((a,d)=>a+Object.values(S.done[d]).filter(Boolean).length,0),pf=all.filter(d=>pct(d)===100).length,po=postedN(),L=player().lv;
+return[['🌱','First Step',n>=1],['🔥','3-Day Streak',st>=3],['⚡','7-Day Streak',st>=7],['🏔️','30-Day Streak',st>=30],['⭐','Perfect Day',pf>=1],['💎','5 Perfect Days',pf>=5],['🎬','First Post',po>=1],['📣','10 Posts',po>=10],['🏅','Challenger',Object.keys(S.chWins).length>=1],['📜','7 Pledge Days',Object.keys(S.pledgeDays).length>=7],['🛡️','Level 3',L>=3],['👑','Level 5',L>=5]]}
+let fxq=null;
+function pop(f){const el=document.createElement('div');el.className='float';el.textContent=f.t||'+10 XP';el.style.left=f.x+'px';el.style.top=f.y+'px';document.body.appendChild(el);setTimeout(()=>el.remove(),1000);
+const P=player();if(P.lv>f.L){banner(P.icon+' LEVEL UP!','You are now Lv '+P.lv+' · '+P.title);boom()}else if(!f.t&&!f.Pf&&pct(TK)===100){banner('🏆 BOSS DEFEATED!','Perfect day! +25 bonus XP');boom()}else if(f.won){banner('🏅 CHALLENGE COMPLETE!','+50 XP earned');boom()}}
+function banner(a,b){const o=document.createElement('div');o.className='ovl';o.innerHTML='<div><h2>'+a+'</h2><p>'+b+'</p></div>';o.onclick=()=>o.remove();document.body.appendChild(o);setTimeout(()=>o.remove(),2600)}
+function boom(){for(let i=0;i<40;i++){const c=document.createElement('i');c.className='cf';c.style.left=Math.random()*100+'vw';c.style.background=['#16a37f','#3b6ef5','#f08a24','#e94b8b','#ffd23f'][i%5];c.style.animationDelay=Math.random()*.4+'s';document.body.appendChild(c);setTimeout(()=>c.remove(),2200)}}
+function pledgeCard(){const p=S.pledge,kept=S.pledgeDays[TK],n=Object.keys(S.pledgeDays).length;
+if(editP||!p.text)return `<div class="card pl"><h2>📜 My Pledge</h2><label>I commit to…</label><input type="text" id="pl-text" value="${esc(p.text||'')}" placeholder="e.g. I will show up every day, even when I don't feel like it"><label>Because (my why)…</label><input type="text" id="pl-why" value="${esc(p.why||'')}" placeholder="e.g. I want a healthy body and a business I'm proud of"><label>My reward when I keep it…</label><input type="text" id="pl-rw" value="${esc(p.rw||'')}" placeholder="e.g. A new workout outfit"><label>Signed by</label><input type="text" id="pl-nm" value="${esc(p.name||'')}" placeholder="Your name"><div class="add"><button class="btn" data-psave="1">✍️ Sign &amp; save</button>${p.text?'<button class="btn ghost" data-pcancel="1">Cancel</button>':''}</div></div>`;
+return `<div class="card pl"><h2><span>📜 My Pledge</span><button class="x" data-pedit="1" title="Edit">✎</button></h2><p class="pq">“${esc(p.text)}”</p>${p.why?`<div class="sub">Because ${esc(p.why)}</div>`:''}${p.rw?`<div class="sub">🎁 Reward: ${esc(p.rw)}</div>`:''}<div class="sub">— ${esc(p.name||'Me')}, signed ${p.date||TK}</div><button class="btn pk ${kept?'on':''}" data-pkeep="1">${kept?'✅ Pledge kept today (+10 XP)':'🤝 I kept my pledge today'}</button><div class="sub">${n} day${n===1?'':'s'} kept</div></div>`}
+function challengeCard(){const wk=weekKey(),left=7-((today.getDay()+6)%7);
+let h=`<div class="card" style="--c:var(--biz)"><h2><span>🏆 Weekly Challenges</span><span class="sub">${left} day${left>1?'s':''} left</span></h2>`;
+h+=S.challenges.map(c=>{const n=S.cc[wk+':'+c.id]||0,ok=n>=c.target,w=Math.min(100,n/c.target*100);
+return `<div class="ch"><div class="pt"><span>${ok?'✅ ':''}${esc(c.text)}</span><button class="x" data-chrm="${c.id}">×</button></div><div class="bar"><div style="width:${w}%;background:${ok?'var(--fit)':'var(--biz)'}"></div></div><div class="pt"><span class="sub">${n}/${c.target}${ok?' · +50 XP earned!':''}</span><span><button class="step" data-chm="${c.id}">−</button><button class="step" data-chp="${c.id}">+</button></span></div></div>`}).join('')||'<div class="sub">No challenges yet. Add one below.</div>';
+return h+`<div class="add"><input type="text" id="in-ch" placeholder="e.g. Publish 3 YouTube videos"><input type="number" id="in-chn" value="5" min="1" max="99" style="width:64px"><button class="btn" data-chadd="1">Add</button></div><div class="sub" style="margin-top:8px">Resets every Monday · each completed challenge = +50 XP</div></div>`}
+const HAIR=['#3b3b4f','#3b6ef5','#16a37f','#f08a24','#e94b8b','#a855f7','#ffd23f','#ffd23f'];
+function hero(lv){const c=HAIR[Math.min(lv-1,7)],big=lv>=3;
+return `<svg viewBox="0 0 64 64" aria-label="Your hero">${lv>=2?`<circle cx="32" cy="34" r="${big?29:25}" fill="${c}" opacity=".3" style="transform-origin:32px 34px;${big?'animation:pu 1.4s infinite':''}"/>`:''}<path d="M10,64 Q32,46 54,64Z" fill="#3b6ef5"/><ellipse cx="32" cy="37" rx="15" ry="16" fill="#f2c9a0"/><polygon points="14,31 8,12 22,20 25,2 32,17 39,2 42,20 56,12 50,31 32,22" fill="${c}"/><rect x="17" y="28" width="30" height="4" rx="2" fill="#e5484d"/><line x1="22" y1="34" x2="29" y2="36" stroke="#222" stroke-width="2" stroke-linecap="round"/><line x1="42" y1="34" x2="35" y2="36" stroke="#222" stroke-width="2" stroke-linecap="round"/><ellipse cx="26" cy="39" rx="2.2" ry="2.6" fill="#222"/><ellipse cx="38" cy="39" rx="2.2" ry="2.6" fill="#222"/><path d="M27,47 Q32,51 37,47" fill="none" stroke="#a5523a" stroke-width="2" stroke-linecap="round"/></svg>`}
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function renderToday(){
+  const p=pct(TK),q=QUOTES[(today.getDate()+today.getMonth())%QUOTES.length];
+  const posted=Object.values(S.plans).flat().filter(x=>x.done).length;
+  const P=player();
+  let h=`<div class="hero"><div class="avatar">${hero(P.lv)}</div><div class="pinfo"><div class="pt"><b>${P.icon} Lv ${P.lv} · ${P.title}</b><span>${P.xp} XP</span></div><div class="xpbar"><div style="width:${P.pc}%"></div></div><small>${P.next} XP to Level ${P.lv+1}</small><q>“${q}”</q></div></div>
+  <div class="boss ${p===100?'dead':''}"><div class="pt"><b>${p===100?'🏆 Procrastination Monster defeated!':'👾 Daily Boss: Procrastination Monster'}</b><span>${100-p} HP</span></div><div class="xpbar"><div style="width:${100-p}%"></div></div><small>Every goal you finish = damage + 10 XP. Defeat it for a +25 XP bonus.</small></div>
+  <div class="stats"><div class="stat"><b>🔥 ${streak()}</b><span>day streak (70%+)</span></div><div class="stat"><b>${S.goals.filter(g=>(S.done[TK]||{})[g.id]).length}/${S.goals.length}</b><span>done today</span></div><div class="stat"><b>${posted}</b><span>content posted</span></div></div>`;
+  h+=pledgeCard()+challengeCard();
+  for(const k in CATS){const C=CATS[k],gs=S.goals.filter(g=>g.cat===k),d=S.done[TK]||{};
+    h+=`<div class="card" style="--c:${C.c}"><h2><span>${C.e} ${C.n}</span><span class="pill" style="background:${C.c}">Lv ${catLv(k)} · ${pct(TK,k)}%</span></h2>`;
+    h+=gs.map(g=>`<div class="item ${d[g.id]?'done':''}"><button class="chk ${d[g.id]?'on':''}" data-tg="${g.id}" aria-label="toggle">${d[g.id]?'✓':''}</button><span>${esc(g.text)}</span><button class="x" data-rm="${g.id}" aria-label="remove">×</button></div>`).join('')||'<div class="sub">No goals yet.</div>';
+    h+=`<div class="add"><input type="text" id="in-${k}" placeholder="Add a ${C.n.toLowerCase()} goal…"><button class="btn" data-add="${k}">Add</button></div></div>`}
+  return h}
+
+function renderPlan(){
+  const y=cm.getFullYear(),m=cm.getMonth(),first=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate();
+  let h=`<div class="card"><div class="mnav"><button data-m="-1">‹</button><b>${cm.toLocaleString('en',{month:'long',year:'numeric'})}</b><button data-m="1">›</button></div><div class="cal">`+
+   ['S','M','T','W','T','F','S'].map(d=>`<div class="dow">${d}</div>`).join('')+'<div></div>'.repeat(first);
+  for(let d=1;d<=dim;d++){const k=key(new Date(y,m,d)),n=(S.plans[k]||[]).length;
+    h+=`<button class="day ${k===TK?'today':''} ${k===sel?'sel':''}" data-d="${k}">${d}${n?`<i>●${n>1?n:''}</i>`:''}</button>`}
+  h+='</div></div>';
+  const items=S.plans[sel]||[],dt=new Date(sel+'T00:00');
+  h+=`<div class="card" style="--c:var(--con)"><h2>🎬 ${dt.toLocaleDateString('en',{weekday:'long',day:'numeric',month:'short'})}</h2>`+
+   (items.map((it,i)=>`<div class="item ${it.done?'done':''}"><button class="chk ${it.done?'on':''}" data-pt="${i}">${it.done?'✓':''}</button><span>${esc(it.t)}</span><button class="x" data-pr="${i}">×</button></div>`).join('')||'<div class="sub">Nothing planned. Add your content idea below.</div>')+
+   `<div class="add"><input type="text" id="in-plan" placeholder="e.g. Reel: 5 morning habits"><button class="btn" data-pa="1">Add</button></div></div>`;
+  const mk=Object.keys(S.plans).filter(k=>k.startsWith(key(cm).slice(0,7))),all=mk.flatMap(k=>S.plans[k]);
+  h+=`<div class="sub" style="text-align:center">This month: ${all.length} planned · ${all.filter(x=>x.done).length} posted</div>`;
+  return h}
+
+function renderProg(){
+  const days=[...Array(7)].map((_,i)=>{const d=new Date(today);d.setDate(d.getDate()-6+i);return d});
+  let h=`<div class="card"><h2>Last 7 days · overall</h2><div class="week">`+days.map(d=>{const p=pct(key(d));return `<div><em style="height:${Math.max(4,p*.8)}px;opacity:${d.toDateString()===today.toDateString()?1:.65}"></em>${d.toLocaleDateString('en',{weekday:'narrow'})}<br>${p}%</div>`}).join('')+'</div></div>';
+  h+='<div class="card"><h2>🪜 Level Roadmap</h2><div class="badges">'+TITLES.map((t,i)=>{const L=player().lv;return `<div class="bd ${L>=i+1?'':'lock'}" style="${L===i+1?'border:2px solid var(--con)':''}"><b>${ICONS[i]}</b>Lv ${i+1} · ${t}<br><span style="color:var(--mut)">${50*i*i} XP</span></div>`}).join('')+'</div></div><div class="card"><h2>🏅 Achievements</h2><div class="badges">'+badges().map(x=>`<div class="bd ${x[2]?'':'lock'}"><b>${x[0]}</b>${x[1]}</div>`).join('')+'</div></div><div class="card"><h2>This month by area</h2>';
+  const dm=[...Array(today.getDate())].map((_,i)=>key(new Date(today.getFullYear(),today.getMonth(),i+1)));
+  for(const k in CATS){const C=CATS[k],avg=Math.round(dm.reduce((a,d)=>a+pct(d,k),0)/dm.length);
+    h+=`<div class="row"><p><span>${C.e} ${C.n} · Lv ${catLv(k)}</span><b>${avg}%</b></p><div class="bar"><div style="width:${avg}%;background:${C.c}"></div></div></div>`}
+  const best=dm.filter(d=>pct(d)===100).length;
+  h+=`</div><div class="stats"><div class="stat"><b>🔥 ${streak()}</b><span>current streak</span></div><div class="stat"><b>${best}</b><span>perfect days</span></div></div><div class="sub" style="text-align:center">Your data is saved in this browser only.</div>`;
+  return h}
+
+function render(){
+  const hr=today.getHours();document.getElementById('hi').textContent=(hr<12?'Good morning':hr<18?'Good afternoon':'Good evening')+' 👋';
+  document.getElementById('date').textContent=today.toLocaleDateString('en',{weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('view').innerHTML=tab==='today'?renderToday():tab==='plan'?renderPlan():renderProg();
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;const D=b.dataset;
+  if(D.t){tab=D.t;}
+  else if(D.tg){const L=player().lv,Pf=pct(TK)===100,d=S.done[TK]=S.done[TK]||{};d[D.tg]=!d[D.tg];if(d[D.tg]){const r=b.getBoundingClientRect();fxq={x:r.left,y:r.top,L,Pf}}}
+  else if(D.rm){S.goals=S.goals.filter(g=>g.id!==D.rm)}
+  else if(D.add){const i=document.getElementById('in-'+D.add),v=i.value.trim();if(!v)return;S.goals.push({id:uid(),cat:D.add,text:v})}
+  else if(D.m){cm=new Date(cm.getFullYear(),cm.getMonth()+ +D.m,1)}
+  else if(D.d){sel=D.d}
+  else if(D.pa){const i=document.getElementById('in-plan'),v=i.value.trim();if(!v)return;(S.plans[sel]=S.plans[sel]||[]).push({t:v,done:false})}
+  else if(D.pt!==undefined){const L=player().lv,it=S.plans[sel][+D.pt];it.done=!it.done;if(it.done){const r=b.getBoundingClientRect();fxq={x:r.left,y:r.top,L,t:'+15 XP'}}}
+  else if(D.pr!==undefined){S.plans[sel].splice(+D.pr,1);if(!S.plans[sel].length)delete S.plans[sel]}
+  else if(D.chp||D.chm){const id=D.chp||D.chm,k=weekKey()+':'+id,c=S.challenges.find(x=>x.id===id),L=player().lv,was=(S.cc[k]||0)>=c.target,n=Math.max(0,(S.cc[k]||0)+(D.chp?1:-1));S.cc[k]=n;if(n>=c.target)S.chWins[k]=1;else delete S.chWins[k];if(D.chp){const r=b.getBoundingClientRect(),won=!was&&n>=c.target;fxq={x:r.left,y:r.top,L,t:won?'+50 XP':'+1',won}}}
+  else if(D.chadd){const v=document.getElementById('in-ch').value.trim(),t=Math.max(1,Math.min(99,parseInt(document.getElementById('in-chn').value)||1));if(!v)return;S.challenges.push({id:uid(),text:v,target:t})}
+  else if(D.chrm){S.challenges=S.challenges.filter(c=>c.id!==D.chrm)}
+  else if(D.psave){const g=i=>document.getElementById(i).value.trim(),t=g('pl-text');if(!t)return;S.pledge={text:t,why:g('pl-why'),rw:g('pl-rw'),name:g('pl-nm'),date:S.pledge.date||TK};editP=false}
+  else if(D.pedit){editP=true}
+  else if(D.pcancel){editP=false}
+  else if(D.pkeep){const L=player().lv;if(S.pledgeDays[TK])delete S.pledgeDays[TK];else{S.pledgeDays[TK]=1;const r=b.getBoundingClientRect();fxq={x:r.left+r.width/2,y:r.top,L,t:'+10 XP'}}}
+  else return;
+  save();render();if(fxq){pop(fxq);fxq=null}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id?.startsWith('in-')){const id=e.target.id.slice(3);document.querySelector(id==='plan'?'[data-pa]':id==='ch'||id==='chn'?'[data-chadd]':`[data-add="${id}"]`)?.click()}});
+const $=i=>document.getElementById(i),z=n=>String(n).padStart(2,'0');
+function sprintTick(){const st=S.sprint,D=864e5,end=st.start+30*D,now=Date.now(),left=Math.max(0,end-now),dl=left/D,
+day=Math.min(30,Math.max(1,Math.floor((now-st.start)/D)+1));
+$('sp-d').textContent=Math.floor(dl);$('sp-h').textContent=z(Math.floor(left%D/36e5));$('sp-m').textContent=z(Math.floor(left%36e5/6e4));$('sp-s').textContent=z(Math.floor(left%6e4/1e3));
+$('sp-day').textContent=left?'Day '+day+' of 30':'Finished';
+$('sp-bar').style.width=Math.min(100,Math.max(0,(now-st.start)/(30*D)*100))+'%';
+$('sp').className='sprint '+(!left?'won':dl<=3?'danger':dl<=7?'warn':'');
+$('sp-msg').textContent=!left?'🏁 Sprint complete! Review your wins, then restart for another 30 days.':dl<=3?'🚨 Last 72 hours. Finish everything you started!':dl<=7?'⚠️ Final week. No excuses, make every day count!':dl<=15?'⏳ Halfway gone. Time to push harder!':'⏰ The clock is running. Make today count!'}
+function sprintInit(){const st=S.sprint;$('sp-name').textContent='🔥 '+st.name;$('sp-nin').value=st.name;$('sp-din').value=key(new Date(st.start));sprintTick()}
+let armed=0;
+$('sp-gear').onclick=()=>$('sp-set').classList.toggle('hide');
+$('sp-nin').onchange=e=>{S.sprint.name=e.target.value.trim()||'30-Day Sprint';save();sprintInit()};
+$('sp-din').onchange=e=>{if(!e.target.value)return;S.sprint.start=new Date(e.target.value+'T00:00').getTime();save();sprintInit()};
+$('sp-rs').onclick=e=>{const b=e.currentTarget;if(armed){armed=0;S.sprint.start=Date.now();save();sprintInit();b.textContent='↻ Restart 30 days from now'}else{armed=1;b.textContent='Tap again to confirm restart';setTimeout(()=>{armed=0;b.textContent='↻ Restart 30 days from now'},3000)}};
+function msLoop(){const left=Math.max(0,S.sprint.start+30*864e5-Date.now());$('sp-ms').textContent=z(Math.floor(left%1000/10));requestAnimationFrame(msLoop)}
+sprintInit();setInterval(sprintTick,1000);msLoop();
+render();
+</script>
+</body>
+</html>
